@@ -1,0 +1,23 @@
+{
+  "name": "plusagent-fullstack-test-backend",
+  "version": "0.1.0",
+  "description": "Backend of test application for Fullstack Developer role",
+  "main": "src/server.ts",
+  "author": "Max Kobozev <quesesr@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node-dev --watch ./src --transpile-only ./src/server.ts",
+    "create-schema": "ts-node --transpile-only ./src/create-schema.ts"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "sqlite": "^4.0.14",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.7",
+    "@types/node": "^14.11.1",
+    "ts-node-dev": "^1.0.0-pre.62",
+    "typescript": "^4.0.3"
+  }
+}
