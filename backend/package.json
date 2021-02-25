@@ -7,14 +7,16 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node-dev --watch ./src --transpile-only ./src/server.ts",
-    "create-schema": "ts-node --transpile-only ./src/create-schema.ts"
+    "create-schema": "ts-node --transpile-only ./src/db/create-schema.ts",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "sqlite": "^4.0.14",
-    "sqlite3": "^5.0.0"
+    "better-sqlite3": "^7.1.2",
+    "express": "^4.17.1"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^5.4.1",
     "@types/express": "^4.17.7",
     "@types/node": "^14.11.1",
     "ts-node-dev": "^1.0.0-pre.62",

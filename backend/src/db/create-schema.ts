@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
-import { getDbConnection } from './get-db-connection'
+import * as connectDB from 'better-sqlite3'
+const path = require('path')
 import * as fs from 'fs'
+import sql from './sqlQueries'
+
+
+const dbPath = path.join(__dirname, '../..', '/data/db/data.db')
 
 const createSchema = async () => {
-  await fs.promises.unlink('./data/db/data.db')
-  const db = getDbConnection()
-
-  // Put your SQL queries here
+  const db = connectDB(dbPath)
+  db.prepare(sql.createTodosTable).run()
+  db.close()
 }
 
 createSchema()

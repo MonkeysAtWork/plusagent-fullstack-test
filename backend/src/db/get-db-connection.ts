@@ -1,14 +1,9 @@
-import { open, Database } from 'sqlite'
+import * as connectDB from 'better-sqlite3'
+const path = require('path')
 
-let connection: Database
+const dbPath = path.join(__dirname, '../..', '/data/db/data.db')
 
-export const getDbConnection = async () => {
-  if (!connection) {
-    connection = await open({
-      filename: './data/db/data.db',
-      driver: require('sqlite3').Database
-    })
-  }
-
-  return connection
+export default () => {
+  return connectDB(dbPath, { fileMustExist: true });
 }
+
