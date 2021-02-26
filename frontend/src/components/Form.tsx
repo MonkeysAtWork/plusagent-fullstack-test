@@ -9,9 +9,11 @@ const validate = ({ description, date }: any) => {
   const errors: any = {};
   if (!description) {
     errors.description = 'description should not be empty';
+  } else if (description.trim() === '') {
+    errors.description = 'description should not consit of spaces only';
   }
   if (!date) {
-    errors.date = 'date should not be empty';
+    errors.date = 'date should be correct';
   }
   return errors;
 }
@@ -21,13 +23,8 @@ function Form(props: any) {
 
   const formik = useFormik({
     initialValues: { description: '', date: format(new Date(), 'yyyy-MM-dd'), form: '' },
+    validate,
     onSubmit: async (values, { setErrors, resetForm }) => {
-      const errors = validate(values);
-
-      if (errors.date || errors.description) {
-        setErrors(errors);
-        return;
-      }
       try {
         const url = paths.todosPath()
         const resp = await axios.post(url, { data: values })
@@ -41,38 +38,31 @@ function Form(props: any) {
         setErrors({ form: err.message });
       }
     },
-  });
+  })
 
   return (
     <form className='Form' onSubmit={formik.handleSubmit}>
       <div className={cn({ 'is-invalid': formik.errors.form })}>
         <div className='mb-3 w-100'>
-          <label htmlFor='textInput' className='form-label'>todo</label>
+          <label className='form-label'>todo</label>
           <input
-            name='description'
             type='text'
-            id='textInput'
-            className={cn('form-control', { 'is-invalid': formik.errors.description })}
-            onChange={formik.handleChange}
-            value={formik.values.description}
-          />
-          <div className="invalid-feedback">
-            {formik.errors.description}
-          </div>
+            className={cn('form-control', { 'is-invalid': formik.touched.description && formik.errors.description })}
+            {...formik.getFieldProps('description')}
+            />
+          {formik.touched.description && formik.errors.description
+            && <div className="invalid-feedback">{formik.errors.description}</div>}
         </div>
         <div className='d-flex justify-content-between w-100'>
           <div>
             <label className='form-label'>date</label>
             <input
-              name='date'
               type='date'
-              className={cn('form-control', { 'is-invalid': formik.errors.date })}
-              onChange={formik.handleChange}
-              value={formik.values.date}
+              className={cn('form-control', { 'is-invalid': formik.touched.date && formik.errors.date })}
+              {...formik.getFieldProps('date')}
             />
-            <div className="invalid-feedback">
-              {formik.errors.date}
-            </div>
+            {formik.touched.date && formik.errors.date
+              && <div className="invalid-feedback">{formik.errors.date}</div>}
           </div>
           <div className='d-flex align-self-end'>
             <button
@@ -92,9 +82,8 @@ function Form(props: any) {
           </div>
         </div>
       </div>
-      <div className="invalid-feedback">
-        {formik.errors.form}
-      </div>
+      {formik.errors.form
+        && <div className="invalid-feedback">{formik.errors.form}</div>}
     </form>
   )
 }

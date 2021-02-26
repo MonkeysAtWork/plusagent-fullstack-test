@@ -1,61 +1,52 @@
 #!/usr/bin/env node
 
+import { Integer } from 'better-sqlite3'
+import Database = require('better-sqlite3')
 import * as express from 'express'
-import connectDB from './db/get-db-connection'
+const cors = require('cors')
 const path = require('path')
+import connectDB from './db/get-db-connection'
 import sql from './db/sqlQueries'
 
 const app = express()
 
+app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-const state: any = {
-  todos: []
-}
-
-const dbPath = path.join(__dirname, '/data/db/data.db')
+let db: any
 
 try {
-  const db = connectDB();
-  const data = db.prepare(sql.getTodos).all();
-  db.close()
-  if (!data) {
-    throw new Error('no data from database')
-  }
-  state.todos.push(...data)
+  db = connectDB()
 } catch (err) {
   console.error('Some throwble with database')
   throw new Error(err)
 }
 
-
 app
-  .use(express.static(path.join(__dirname, '..', 'build')))
-  .get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
-  })
-  .get('/api/todos', (req, res) => {
-    const data = state.todos
-      .slice()
-      .sort((a: any, b: any) => new Date(a.date) < new Date(b.date) ? -1 : 1)
+  .get('/api/todos', (req, res, next) => {
+    const data = db.prepare(sql.getTodos).all()
+    if (!data) {
+      next('no data from database')
+    }
     res.json({ data })
   })
-  .post('/api/todos', (req, res) => {
+  .post('/api/todos', (req, res, next) => {
     const { description, date } = req.body.data
-    const db = connectDB();
     const dbRes = db.prepare(sql.insertTodo).run(description, date)
-    db.close()
     if (dbRes && dbRes.changes) {
       const data = { description, date, id: dbRes.lastInsertRowid }
-      state.todos.push(data)
       res.json({ data })
       return
     }
-    res.status(400).send('some thing wrong')
+    next('some thing wrong')
   })
-  .use(function (req, res, next) {
+  .use(function (req, res) {
     res.status(404).send('Sorry cant find that!')
+  })
+  .use(function (err: any, req: any, res: any, next: any) {
+    console.error(err)
+    res.status(500).send('Something failed!')
   })
 
 app.listen(3001, () => {

@@ -1,4 +1,4 @@
-const host = '';
+const host = 'http://localhost:3001';
 const prefix = 'api';
 
 const paths = {
