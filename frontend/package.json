@@ -1,7 +1,7 @@
 {
   "name": "plusagent-fullstack-test-frontend",
   "version": "0.1.0",
-  "author": "Max Kobozev <quesesr@gmail.com>",
+  "author": "Sergey Shikhovtsov <sk3250@mail.ru>",
   "license": "MIT",
   "scripts": {
     "start": "react-scripts start",
